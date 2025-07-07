@@ -1,2 +1,5 @@
-자료구조와 알고리즘 학습을 위해 baekjoon 문제 풀이한 것을 모아놓은 것입니다.
-부족한 코드지만 이해 부탁드립니다.
+Baekjoon Online Judge Solutions
+
+This repository contains my solutions for problems on the Baekjoon Online Judge (BOJ).
+
+It serves as a personal archive of my journey in learning Data Structures and Algorithms and improving my problem-solving skills. The code here reflects my learning process, so you may see my coding style evolve over time.
