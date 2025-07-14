@@ -7,34 +7,32 @@ typedef struct _Node{
     struct _Node *next;
 }Node;
 
+// front가 더미를 가리키고, rear가 마지막 데이터를 가리키는 방식이 일반적인 방식
 typedef struct _Queue{
     Node *front, *rear;
 }Queue;
 
 Queue makeQueue(){
     Queue newQueue;
-    Node* frontDummy = (Node*)malloc(sizeof(Node));
-    Node* rearDummy = (Node*)malloc(sizeof(Node));
-    frontDummy->next = rearDummy;
-    rearDummy->next = NULL;
-    newQueue.front = frontDummy;
-    newQueue.rear = rearDummy;
+    Node* Dummy = (Node*)malloc(sizeof(Node));
+    Dummy->next = NULL;
+    newQueue.front = Dummy;
+    newQueue.rear = Dummy;
     return newQueue;
 }
 
 bool isEmpty(Queue *queue){
-    return queue->front->next == queue->rear;
+    return queue->front == queue->rear;
 }
 
 void enqueue(Queue *queue, int index, int item){
-    Node* newDummy = (Node*)malloc(sizeof(Node));
-    newDummy->next = NULL;
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->index = index;
+    newNode->item = item;
+    newNode->next = NULL;
 
-    queue->rear->index = index;
-    queue->rear->item = item;
-    queue->rear->next = newDummy;
-
-    queue->rear = newDummy;
+    queue->rear->next = newNode;
+    queue->rear = newNode;
 }
 
 Node dequeue(Queue *queue){
@@ -50,6 +48,12 @@ Node dequeue(Queue *queue){
     returnNode.item = deNode->item;
 
     queue->front->next = deNode->next;
+
+    // 만약 deNode가 rear인 경우에 그냥 free하게 되면 rear는 해제된 메모리 주소를 가리킨다.
+    // 따라서 rear를 front와 동일하게 지정해주어야 함
+    if(queue->rear == deNode)
+        queue->rear = queue->front;
+    
     free(deNode);
     return returnNode;
 }
@@ -115,21 +119,22 @@ int main(){
         }
         // 문서의 갯수만큼의 중요도를 내림차순으로 정렬
         QuickReverseSort(priority, papers);
-        // 타겟 문서의 인덱스와 dequeue되는 문서의 인덱스가 같고, 현재 가장 큰 중요도와 동일하면 루프를 멈춤
-        while(!(peek(&queue).index == target && peek(&queue).item == priority[count])){
-            // 만약 dequeue되는 문서의 중요도와 현재 가장 높은 중요도가 같으면 인쇄
-            // 문서 하나를 인쇄했기 때문에 count가 1 증가함
-            if(peek(&queue).item == priority[count]){
-                dequeue(&queue);
-                count++;
-            }else if(peek(&queue).item < priority[count]){
-                // 만약 dequeue되는 문서의 중요도가 현재 문서들의 중요도 중 최대가 아니라면 큐의 마지막으로 다시 넣음
-                enqueue(&queue, peek(&queue).index, peek(&queue).item);
-                dequeue(&queue);
+        while(true) {
+            Node current = peek(&queue); // 맨 앞 문서를 확인
+            // 현재 문서의 중요도가 가장 높은 경우
+            if (current.item == priority[count]) {
+                count++; // 인쇄 순서 증가
+                dequeue(&queue); // 큐에서 제거 (인쇄)
+                // 방금 인쇄한 문서가 우리가 찾던 target 문서라면 루프 종료
+                if (current.index == target) {
+                    printf("%d\n", count); // count가 이미 인쇄 순서이므로 그대로 출력
+                    break;
+                }
+            } else { // 중요도가 가장 높지 않은 경우 큐의 맨 뒤로 보냄
+                Node temp = dequeue(&queue);
+                enqueue(&queue, temp.index, temp.item);
             }
         }
-        // 루프에서 타겟문서를 찾았을 때 인쇄(dequeue)가 없었기 때문에 count를 1 증가한 값을 출력해야 함
-        printf("%d\n", count+1);
         // 다음 케이스를 위해 큐를 비움
         clearQueue(&queue);
     }

@@ -241,6 +241,6 @@ void traverseInOrder(Node *node) {
   // write your own code
   if (node == NULL) return;
   traverseInOrder(node->left);
-  printf("%s (%d) ", node.);
+  printf("%s (%d) ", node->key);
   traverseInOrder(node->right);
 }

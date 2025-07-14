@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <string>
 using namespace std;
 
 const int num_subject = 20;
@@ -42,15 +43,3 @@ int main(){
     cout << Sum_scores / not_pf_lecture;
     return 0;
 }
-
-/*
-#include <unordered_map>
-
-unordered_map<string, double> score_map = {
-    {"A+", 4.5}, {"A0", 4.0}, {"B+", 3.5}, {"B0", 3.0},
-    {"C+", 2.5}, {"C0", 2.0}, {"D+", 1.5}, {"D0", 1.0},
-    {"F", 0.0}
-}; -> unordered_map은 고유한 키와 값의 쌍으로 구성
-    - score_map.count(score)은 unordered_map에 score 키가 있으면 1 없으면 0
-    - score_map[score]은 score키와 쌍인 값을 반환한다.
-*/
