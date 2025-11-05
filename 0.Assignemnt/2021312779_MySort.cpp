@@ -15,7 +15,7 @@ int Gen_Random_Number(int min, int max){
 
 	int range = max - min + 1;
 	
-	return min + (unsigned long long) nano_sec % range
+	return min + (unsigned long long) nano_sec % range;
 }
 
 void Swap(int* front, int* back){
@@ -24,42 +24,54 @@ void Swap(int* front, int* back){
 	*back = tmp;
 }
 
-void Partition(int* numbers, int left, int right){
+int Partition(int* numbers, int left, int right){
 	int point = Gen_Random_Number(left, right);
 	int pivot = numbers[point];
 	int i = left - 1; // pivot보다 작은 수가 없다고 생각하고 시작
 	
 	// pivot을 배열의 마지막 위치로 보냄
-	Swap(&numbers[pivot], &numbers[right]);
+	Swap(&numbers[point], &numbers[right]);
 
 	for(int k = left; k < right; k++){
 		if(numbers[k] <= pivot){
-			i++;
+			i++; // pivot보다 작은 수 +1
+			Swap(&numbers[i], &numbers[k]); // pivot보다 작은 수를 한 쪽으로 모음
 		}
 	}
+	Swap(&numbers[i+1], &numbers[right]); // pivot보다 작은 수들을 numbers[i]까지 모았으니 그 다음 위치에 pivot을 둠
+	return i + 1; // pivot의 위치를 리턴
 }
 
 void My_Insertion_Sort(int* numbers, int left, int right){
-
+	for(int i = left + 1; i <= right; i++){
+		int tmp = numbers[i];
+		int j;
+		for(j = i; j > left; j--){
+			if(numbers[j-1] > tmp){
+				numbers[j] = numbers[j-1];
+			}else{
+				numbers[j] = tmp;
+				break;
+			}
+		}
+		numbers[j] = tmp;
+	}
 }
 
 void My_Quick_Sort(int* numbers, int left, int right){
-	int size = left - right;
+	int size = right - left + 1;
 	if(left < right && size <= 8){
 		My_Insertion_Sort(numbers, left, right);
 	}else if(left < right){
 		int point_pivot = Partition(numbers, left, right);
-
+		My_Quick_Sort(numbers,left,point_pivot- 1); // 피봇보다 작은 부분을 정렬
+        My_Quick_Sort(numbers,point_pivot+1,right); // 피봇보다 큰 부분을 정렬
 	}
 }
 
-void MyVeryFastSort(int n, int *d)
-{
-
-
+void MyVeryFastSort(int n, int *d){
+	My_Quick_Sort(d, 0, n - 1);
 }
-
-
 
 /////////////////////////////////////////////////////////////////////////
 //////////////// YOUR PLAYGROUND ENDS HERE ////////////////
