@@ -64,13 +64,13 @@ void printGraph(Graph *graph) {
   }
 }
 
-void dfs(Graph* graph, int *isvisit, int start){
-    isvisit[start] = true;
+void dfs(Graph* graph, int *isVisit, int start){
+    isVisit[start] = true;
     printf("%d ", graph->heads[start]->index);
     Vertex *travel = graph->heads[start]->next;
     while(travel != NULL){
-        if(!isvisit[travel->index])
-            dfs(graph, isvisit, travel->index);
+        if(!isVisit[travel->index])
+            dfs(graph, isVisit, travel->index);
         travel = (travel->next != NULL) ? travel->next : travel;
     }
 }
