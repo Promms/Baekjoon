@@ -20,25 +20,6 @@ inline void Swap(int* front, int* back){
 	*back = tmp;
 }
 
-int Partition(int* numbers, int left, int right){
-    int mid_point = (left+right)/2;
-	int point = Median_of_three(numbers[left], left, numbers[mid_point], mid_point, numbers[right], right);
-    int pivot = numbers[point];
-	int i = left - 1; // pivot보다 작은 수가 없다고 생각하고 시작
-	
-	// pivot을 배열의 마지막 위치로 보냄
-	Swap(&numbers[point], &numbers[right]);
-
-	for(int k = left; k < right; k++){
-		if(numbers[k] < pivot){
-			i++; // pivot보다 작은 수 +1
-			Swap(&numbers[i], &numbers[k]); // pivot보다 작은 수를 한 쪽으로 모음
-		}
-	}
-	Swap(&numbers[i+1], &numbers[right]); // pivot보다 작은 수들을 numbers[i]까지 모았으니 그 다음 위치에 pivot을 둠
-	return i + 1; // pivot의 위치를 리턴
-}
-
 void My_Insertion_Sort(int* numbers, int left, int right){
 	for(int i = left + 1; i <= right; i++){
 		int tmp = numbers[i];
@@ -51,16 +32,49 @@ void My_Insertion_Sort(int* numbers, int left, int right){
 	}
 }
 
+
+void Three_way_partition(int* numbers, int left, int right, int& same_start, int& same_end){
+    int mid_point = (left+right)/2;
+	int point = Median_of_three(numbers[left], left, numbers[mid_point], mid_point, numbers[right], right);
+    int pivot = numbers[point];
+	
+	int point_small = left - 1;
+	int point_same = left - 1;
+	
+	// pivot을 배열의 마지막 위치로 보냄
+	Swap(&numbers[point], &numbers[right]);
+
+	for(int k = left; k < right; k++){
+		if(numbers[k] < pivot){
+			point_small++; // pivot보다 작은 수 +1
+			point_same++; // pivot과 같은 수 +1
+			Swap(&numbers[point_small], &numbers[k]); // pivot보다 작은 수를 한 쪽으로 모음
+
+			if(point_small != point_same){
+				Swap(&numbers[point_same], &numbers[k]);
+				// 같은 수가 있었는데 pivot보다 작은 수와 swap이 일어나서 같은 수가 k의 위치로 갔으면
+				// 그 같은 수를 point_same 위치로 보내야 함
+			}
+		}
+	}
+	Swap(&numbers[point_same+1], &numbers[right]); // pivot보다 작은 수들을 numbers[i]까지 모았으니 그 다음 위치에 pivot을 둠
+
+	same_start = point_small + 1;
+	same_end = point_same + 1;
+}
+
 void My_Quick_Sort(int* numbers, int left, int right){
     if(left >= right) return;
 	int size = right - left + 1;
-	if(size <= 16){
+	if(size <= 32){
 		My_Insertion_Sort(numbers, left, right);
         return;
 	}
-    int point_pivot = Partition(numbers, left, right);
-    My_Quick_Sort(numbers,left,point_pivot- 1); // 피봇보다 작은 부분을 정렬
-    My_Quick_Sort(numbers,point_pivot+1,right); // 피봇보다 큰 부분을 정렬
+
+	int left_point, right_point;
+    Three_way_partition(numbers, left, right, left_point, right_point);
+    My_Quick_Sort(numbers, left, left_point - 1); // 피봇보다 작은 부분을 정렬
+    My_Quick_Sort(numbers, right_point + 1,right); // 피봇보다 큰 부분을 정렬
 }
 
 int Partition_by_bit(int* numbers, int left, int right, int bit_pos){
@@ -81,7 +95,7 @@ int Partition_by_bit(int* numbers, int left, int right, int bit_pos){
 void My_MSD_Partition_Sort(int* numbers, int left, int right, int bit_pos){
     if(left >= right)   return;
 
-    int cut_of_bit = 24;
+    int cut_of_bit = 0;
     int cut_of_size = 512;
 
     if(bit_pos < cut_of_bit || (right - left + 1) < cut_of_size){
@@ -112,7 +126,7 @@ void Hybrid_MSD_Quick_Sort(int* numbers, int n){
 
 void MyVeryFastSort(int n, int *d){
 	Hybrid_MSD_Quick_Sort(d, n);
-	//std::sort(d, d + n); 속도 비교를 위해 남겨둠
+	std::sort(d, d + n); // 속도 비교를 위해 남겨둠
 }
 
 /////////////////////////////////////////////////////////////////////////
