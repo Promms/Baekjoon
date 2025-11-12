@@ -126,7 +126,7 @@ void Hybrid_MSD_Quick_Sort(int* numbers, int n){
 
 void MyVeryFastSort(int n, int *d){
 	Hybrid_MSD_Quick_Sort(d, n);
-	std::sort(d, d + n); // 속도 비교를 위해 남겨둠
+	// std::sort(d, d + n); // 속도 비교를 위해 남겨둠
 }
 
 /////////////////////////////////////////////////////////////////////////
