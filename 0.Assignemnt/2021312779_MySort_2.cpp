@@ -8,42 +8,29 @@
 //////////////// YOUR PLAYGROUND FROM HERE ////////////////
 ////////////////////////////////////////////////////////////////////////
 
-// XorShift32 난수 생성기
-int Gen_Random_Number(int min, int max){
-	static unsigned long long seed = (unsigned long long)std::chrono::system_clock::now().time_since_epoch().count();
-	seed ^= (seed << 13);
-	seed ^= (seed >> 17);
-	seed ^= (seed << 5);
-	int range = max - min + 1;
-
-	return min + (unsigned long long) seed % range;
-}
-
 int Median_of_three(int a, const int index_a, int b, const int index_b, int c, const int index_c){
     if ((a < b) ^ (a < c)) return index_a;
     else if ((b < a) ^ (b < c)) return index_b;
     else return index_c;
 }
 
-void Swap(int* front, int* back){
+inline void Swap(int* front, int* back){
 	int tmp = *front;
 	*front = *back;
 	*back = tmp;
 }
 
 int Partition(int* numbers, int left, int right){
-	int r_num_1 = Gen_Random_Number(left, right);
-	int r_num_2 = Gen_Random_Number(left, right);
-	int r_num_3 = Gen_Random_Number(left, right);
-	int point = Median_of_three(numbers[r_num_1], r_num_1, numbers[r_num_2], r_num_2, numbers[r_num_3], r_num_3);
-	int pivot = numbers[point];
+    int mid_point = (left+right)/2;
+	int point = Median_of_three(numbers[left], left, numbers[mid_point], mid_point, numbers[right], right);
+    int pivot = numbers[point];
 	int i = left - 1; // pivot보다 작은 수가 없다고 생각하고 시작
 	
 	// pivot을 배열의 마지막 위치로 보냄
 	Swap(&numbers[point], &numbers[right]);
 
 	for(int k = left; k < right; k++){
-		if(numbers[k] <	 pivot){ // <=를 사용하면 같은 수에도 swap이 일어나서 추가적인 연산이 발생
+		if(numbers[k] < pivot){
 			i++; // pivot보다 작은 수 +1
 			Swap(&numbers[i], &numbers[k]); // pivot보다 작은 수를 한 쪽으로 모음
 		}
@@ -56,28 +43,76 @@ void My_Insertion_Sort(int* numbers, int left, int right){
 	for(int i = left + 1; i <= right; i++){
 		int tmp = numbers[i];
 		int j = i;
-		while(j > left && numbers[j-1] > tmp){
-			numbers[j] = numbers[j-1];
-			j--;
-		}
+		while(j > left && numbers[j - 1] > tmp){
+            numbers[j] = numbers[j - 1];
+            j--;
+        }
 		numbers[j] = tmp;
 	}
 }
 
 void My_Quick_Sort(int* numbers, int left, int right){
+    if(left >= right) return;
 	int size = right - left + 1;
-	if(left < right && size <= 16){
+	if(size <= 16){
 		My_Insertion_Sort(numbers, left, right);
-	}else if(left < right){
-		int point_pivot = Partition(numbers, left, right);
-		My_Quick_Sort(numbers,left,point_pivot-1); // pivot보다 작은 부분을 정렬
-        My_Quick_Sort(numbers,point_pivot+1,right); // pivot보다 큰 부분을 정렬
+        return;
 	}
+    int point_pivot = Partition(numbers, left, right);
+    My_Quick_Sort(numbers,left,point_pivot- 1); // 피봇보다 작은 부분을 정렬
+    My_Quick_Sort(numbers,point_pivot+1,right); // 피봇보다 큰 부분을 정렬
+}
+
+int Partition_by_bit(int* numbers, int left, int right, int bit_pos){
+    int mask = 1 << bit_pos;
+    int zero_pos = left;
+    int one_pos = right;
+
+    while(zero_pos <= one_pos){
+        while(zero_pos <= one_pos && (numbers[zero_pos] & mask) == 0) zero_pos++;
+        while(zero_pos <= one_pos && (numbers[one_pos] & mask) != 0) one_pos--;
+        if(zero_pos < one_pos){
+            Swap(&numbers[zero_pos++], &numbers[one_pos--]);
+        }
+    }
+    return zero_pos; // 비트가 1인 부분이 시작하는 위치
+}
+
+void My_MSD_Partition_Sort(int* numbers, int left, int right, int bit_pos){
+    if(left >= right)   return;
+
+    int cut_of_bit = 24;
+    int cut_of_size = 512;
+
+    if(bit_pos < cut_of_bit || (right - left + 1) < cut_of_size){
+        My_Quick_Sort(numbers, left, right);
+        return;
+    }
+
+    int mid = Partition_by_bit(numbers, left, right, bit_pos);
+
+    My_MSD_Partition_Sort(numbers, left, mid - 1, bit_pos - 1);
+    My_MSD_Partition_Sort(numbers, mid, right, bit_pos - 1);
+}
+
+void Hybrid_MSD_Quick_Sort(int* numbers, int n){
+    if(n <= 1) return;
+    for(int i = 0; i < n; i++){
+        // signed integer의 MSB는 음수에서 1, 양수에서 0이기 때문에
+        // MSB를 뒤집어서 음수가 양수보다 앞에 올 수 있게 했다.
+        numbers[i] ^= 0x80000000;
+    }
+    My_MSD_Partition_Sort(numbers, 0, n-1, 31);
+
+    for(int i = 0; i < n; i++){
+        // 앞서 MSB를 뒤집었기 때문에 다시 원래의 MSB로 돌려놓았다.
+        numbers[i] ^= 0x80000000;
+    }
 }
 
 void MyVeryFastSort(int n, int *d){
-	My_Quick_Sort(d, 0, n - 1);
-	//std::sort(d, d + n);
+	Hybrid_MSD_Quick_Sort(d, n);
+	//std::sort(d, d + n); 속도 비교를 위해 남겨둠
 }
 
 /////////////////////////////////////////////////////////////////////////
