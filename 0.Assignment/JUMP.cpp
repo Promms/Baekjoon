@@ -5,6 +5,7 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 
 using namespace std;
 
@@ -105,7 +106,7 @@ void Dijkstra(const char *_filename, Graph &_graph, int goal_y){
 
 
 int main(int argc, char **argv){
-	if( argc != 3 ){
+	if(argc != 3){
 		fprintf( stderr , "USAGE:  EXECUTABLE   INPUT_FILE_NAME   OUTPUT_FILE_NAME\n");
 		return 1;
 	}
@@ -114,16 +115,16 @@ int main(int argc, char **argv){
 
     FILE *input = fopen(argv[1], "r");
 
-    if (!input) {
+    if(!input){
         perror("파일을 열 수 없습니다");
         return 1;
     }
 
-    if (fscanf(input, "%d %d", &n_stepstone, &goal_y) != 2){}
+    if(fscanf(input, "%d %d", &n_stepstone, &goal_y) != 2){}
 
     Graph g(n_stepstone);
 
-    for (int i = 0; i < n_stepstone; i++) {
+    for(int i = 0; i < n_stepstone; i++){
         int x_pos, y_pos;
         if (fscanf(input, "%d %d", &x_pos, &y_pos) == 2)
             g.add_stepstone(i, x_pos, y_pos);

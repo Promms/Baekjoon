@@ -3,6 +3,7 @@
 #include <vector>
 #include <queue>
 #include <limits>
+#include <cstdio>
 
 using namespace std;
 
@@ -17,19 +18,19 @@ public:
     Graph(const char *_filename){
         FILE *input = fopen(_filename, "r");
 
-        if (!input) {
+        if(!input){
             perror("파일을 열 수 없습니다");
             return;
         }
 
-        if (fscanf(input, "%d %d", &n_Vertex, &n_Edge) != 2) {
+        if(fscanf(input, "%d %d", &n_Vertex, &n_Edge) != 2){
             fclose(input);
             return;
         }
 
         edges.resize(n_Vertex);
 
-        for (int i = 0; i < n_Edge; i++) {
+        for(int i = 0; i < n_Edge; i++){
             int u, v;
             double w;
             if (fscanf(input, "%d %d %lf", &u, &v, &w) == 3) {
@@ -103,7 +104,7 @@ void Prim(const char *_filename, Graph<WT> &_graph){
 
 
 int main(int argc, char **argv){
-	if( argc != 3 ){
+	if(argc != 3){
 		fprintf( stderr , "USAGE:  EXECUTABLE   INPUT_FILE_NAME   OUTPUT_FILE_NAME\n");
 		return 1;
 	}
