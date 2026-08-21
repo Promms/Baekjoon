@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(gcc -o 1.exe 1.c)",
-      "Bash(gcc -o 2.exe 2.c)"
-    ]
-  }
-}
