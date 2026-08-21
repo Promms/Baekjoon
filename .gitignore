@@ -1,0 +1,13 @@
+# Editors and local assistants
+.vscode/
+.claude/
+
+# Build outputs
+*.exe
+*.out
+*.o
+*.obj
+
+# Python caches
+__pycache__/
+*.py[cod]
