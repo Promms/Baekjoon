@@ -1,11 +1,11 @@
-# Baekjoon Solutions
+# Algorithm Problem Solving
 
-백준 온라인 저지 문제를 풀며 자료구조와 알고리즘을 연습한 기록입니다. C와 C++ 풀이를 중심으로 난이도별 폴더에 정리하고 있습니다.
+온라인 저지 문제와 수업 과제를 풀며 자료구조와 알고리즘을 연습한 기록입니다. C와 C++ 풀이를 중심으로 정리하고 있습니다.
 
 ## Structure
 
 ```text
-Baekjoon/
+algorithm_problem_solving/
 ├─ 1.Bronze/
 ├─ 2.Silver/
 ├─ 3.Gold/
